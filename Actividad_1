@@ -1,16 +1,29 @@
 public class Hanoi {
     public static void main(String[] args){ 
+        // Llamamos al método torresHanoi con 5 discos y las torres numeradas del 1 al 3
         torresHanoi(5, 1, 2, 3);
     }
 
-    // Método recursivo para la solución de las Torres de Hanoi
+    /**
+     * Método recursivo que resuelve el problema de las Torres de Hanoi.
+     *
+     * @param discos  Número de discos a mover.
+     * @param torre1  Torre origen (de donde se toman los discos).
+     * @param torre2  Torre auxiliar (se usa como apoyo durante el proceso).
+     * @param torre3  Torre destino (a donde se deben mover los discos).
+     */
     public static void torresHanoi(int discos, int torre1, int torre2, int torre3){
-        // Caso base
+        // Caso base: si solo hay un disco, se mueve directamente a la torre destino
         if (discos == 1){
             System.out.println("Mover disco de torre " + torre1 + " a torre " + torre3);
         } else {
+            // Paso 1: mover n-1 discos desde torre1 a torre2, usando torre3 como auxiliar
             torresHanoi(discos - 1, torre1, torre3, torre2);
+            
+            // Paso 2: mover el disco restante (el más grande) a la torre destino
             System.out.println("Mover disco de torre " + torre1 + " a torre " + torre3);
+            
+            // Paso 3: mover los n-1 discos desde torre2 a torre3, usando torre1 como auxiliar
             torresHanoi(discos - 1, torre2, torre1, torre3);
         }
     }
