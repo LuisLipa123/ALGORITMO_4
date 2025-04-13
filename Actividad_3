@@ -1,0 +1,58 @@
+// Clase que implementa la búsqueda binaria utilizando recursividad.
+public class BusquedaBinaria {
+
+    /**
+     * Método de búsqueda binaria recursiva.
+     * Este método busca un elemento dentro de un arreglo ordenado dividiendo el rango de búsqueda a la mitad en cada llamada.
+     *
+     * @param arr Arreglo ordenado de enteros donde se realizará la búsqueda.
+     * @param lo Índice inferior del subarreglo en el que se está buscando.
+     * @param hi Índice superior del subarreglo en el que se está buscando.
+     * @param x Elemento que se desea buscar.
+     * @return El índice donde se encuentra el elemento, o -1 si no está presente.
+     */
+    int BusquedaBinaria(int arr[], int lo, int hi, int x) {
+        // Si el índice superior es mayor o igual al inferior, todavía hay elementos por revisar
+        if (hi >= lo) {
+            // Se calcula el índice medio del subarreglo actual
+            int mid = lo + (hi - lo) / 2;
+
+            // Caso base: si el elemento medio es el que buscamos, retornamos su índice
+            if (arr[mid] == x)
+                return mid;
+
+            // Si el elemento buscado es menor, se busca en la mitad izquierda
+            if (arr[mid] > x)
+                return BusquedaBinaria(arr, lo, mid - 1, x);
+
+            // Si el elemento buscado es mayor, se busca en la mitad derecha
+            return BusquedaBinaria(arr, mid + 1, hi, x);
+        }
+
+        // Si el elemento no se encuentra en el arreglo, se retorna -1
+        return -1;
+    }
+
+    /**
+     * Método principal que ejecuta la búsqueda binaria con un arreglo de ejemplo.
+     */
+    public static void main(String[] args) {
+        // Se crea una instancia de la clase BusquedaBinaria
+        BusquedaBinaria ob = new BusquedaBinaria();
+
+        // Arreglo ordenado de ejemplo
+        int arr[] = { 1, 2, 3, 4, 5 };
+
+        // Elemento que se desea buscar
+        int x = 4;
+
+        // Se llama al método de búsqueda binaria
+        int position = ob.BusquedaBinaria(arr, 0, arr.length - 1, x);
+
+        // Se muestra el resultado en consola
+        if (position == -1)
+            System.out.println("Elemento no encontrado.");
+        else
+            System.out.println("Elemento encontrado en el índice: " + position);
+    }
+}
