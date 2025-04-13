@@ -1,0 +1,95 @@
+import java.util.*;
+
+public class SubconjuntoPotenciasRestringidas {
+
+    // Función principal
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        // Pedir al usuario el tamaño del arreglo
+        System.out.print("Ingrese el tamaño del arreglo: ");
+        int N = scanner.nextInt();  // Leer el tamaño del arreglo
+
+        // Crear el arreglo según el tamaño ingresado
+        int[] arr = new int[N];
+        
+        // Pedir al usuario que ingrese los valores del arreglo
+        System.out.println("Ingrese los elementos del arreglo:");
+        for (int i = 0; i < N; i++) {
+            arr[i] = scanner.nextInt();  // Leer cada valor del arreglo
+        }
+        
+        // Pedir al usuario el objetivo (la suma esperada)
+        System.out.print("Ingrese el objetivo (la suma esperada): ");
+        int objetivo = scanner.nextInt();  // Leer el valor del objetivo
+
+        // Llamamos a la función que verifica si es posible formar el objetivo
+        boolean resultado = esPosibleFormarSubconjunto(arr, objetivo);
+
+        // Imprimir el resultado
+        System.out.println("¿Es posible formar el objetivo? " + resultado);
+    }
+
+    // Función para verificar si es posible formar un subconjunto cuya suma sea igual al objetivo
+    public static boolean esPosibleFormarSubconjunto(int[] arr, int objetivo) {
+        // Primer paso: identificar las potencias de 2 que deben ser incluidas
+        List<Integer> elementosAIncluir = new ArrayList<>();
+        for (int num : arr) {
+            if (esPotenciaDe2(num)) {
+                // Si el número es potencia de 2, debe ser incluido
+                elementosAIncluir.add(num);
+            }
+        }
+
+        // Segundo paso: Verificar las restricciones sobre múltiplos de 5
+        for (int i = 0; i < arr.length; i++) {
+            // Si el número es múltiplo de 5 y su siguiente número en el arreglo es impar,
+            // no podemos incluirlo en el subconjunto
+            if (arr[i] % 5 == 0 && i + 1 < arr.length && arr[i + 1] % 2 != 0) {
+                continue;  // Saltamos el número
+            }
+            // Si no violamos ninguna restricción, agregamos el número al conjunto
+            if (arr[i] % 5 == 0 || esPotenciaDe2(arr[i])) {
+                elementosAIncluir.add(arr[i]);
+            }
+        }
+
+        // Tercer paso: Verificar si podemos formar el objetivo con los números seleccionados
+        return puedeFormarSuma(elementosAIncluir, objetivo);
+    }
+
+    // Función para verificar si un número es potencia de 2
+    // Un número es potencia de 2 si tiene solo un bit en 1 en su representación binaria.
+    public static boolean esPotenciaDe2(int num) {
+        return (num > 0) && ((num & (num - 1)) == 0);
+    }
+
+    // Función para verificar si es posible formar la suma con un subconjunto de números dados
+    // Implementamos un enfoque de programación dinámica para resolver el problema de la suma de subconjuntos.
+    public static boolean puedeFormarSuma(List<Integer> nums, int objetivo) {
+        int n = nums.size();  // Número de elementos en el subconjunto a evaluar
+        boolean[][] dp = new boolean[n + 1][objetivo + 1];  // Tabla DP para almacenar resultados intermedios
+
+        // Inicializamos la primera fila como true para el objetivo 0 (la suma de un subconjunto vacío siempre es 0)
+        for (int i = 0; i <= n; i++) {
+            dp[i][0] = true;
+        }
+
+        // Llenamos la tabla dp
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= objetivo; j++) {
+                // Si el número actual es mayor que el objetivo actual, no lo podemos usar
+                if (nums.get(i - 1) > j) {
+                    dp[i][j] = dp[i - 1][j];
+                } else {
+                    // Opción 1: No usamos el número actual
+                    // Opción 2: Usamos el número actual (restamos su valor del objetivo)
+                    dp[i][j] = dp[i - 1][j] || dp[i - 1][j - nums.get(i - 1)];
+                }
+            }
+        }
+
+        // El valor en dp[n][objetivo] nos dice si es posible o no formar la suma del objetivo
+        return dp[n][objetivo];
+    }
+}
