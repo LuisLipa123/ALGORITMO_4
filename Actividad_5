@@ -1,0 +1,46 @@
+// Clase que implementa el problema de corte de varilla usando Programación Dinámica.
+public class CorteVarillaDP {
+
+    /**
+     * Calcula el valor máximo que se puede obtener al cortar una varilla.
+     * 
+     * @param precios Un arreglo de precios para cada longitud de varilla (indexado desde 0).
+     *                Por ejemplo, precios[0] es el precio para una varilla de longitud 1.
+     * @param longitudVarilla Longitud total de la varilla que se quiere cortar.
+     * @return Valor máximo que se puede obtener al cortar y vender las piezas.
+     */
+    static int obtenerValorMaximo(int[] precios, int longitudVarilla) {
+        // soluciones[i] almacena el valor máximo para una varilla de longitud i
+        int[] soluciones = new int[longitudVarilla + 1];
+
+        // Iteramos sobre cada longitud desde 1 hasta longitudVarilla
+        for (int i = 1; i <= longitudVarilla; i++) {
+            int valorMaximoTemporal = -1;
+
+            // Probamos todas las posibles posiciones de corte j (de 0 a i-1)
+            // y calculamos el valor máximo combinando cortes
+            for (int j = 0; j < i; j++) {
+                valorMaximoTemporal = Math.max(valorMaximoTemporal, precios[j] + soluciones[i - j - 1]);
+            }
+
+            // Almacenamos el mejor resultado encontrado para longitud i
+            soluciones[i] = valorMaximoTemporal;
+        }
+
+        // El resultado final está almacenado en soluciones[longitudVarilla]
+        return soluciones[longitudVarilla];
+    }
+
+    /**
+     * Método principal para ejecutar el ejemplo.
+     */
+    public static void main(String[] args) {
+        // Lista de precios por longitud (indexado desde 0)
+        int[] precios = new int[]{3, 7, 1, 3, 9};  // precios para longitudes 1, 2, 3, 4, 5
+
+        int longitudVarilla = precios.length; // Longitud total de la varilla
+
+        // Llamamos al método para obtener el valor máximo
+        System.out.println("El valor máximo: " + obtenerValorMaximo(precios, longitudVarilla));
+    }
+}
