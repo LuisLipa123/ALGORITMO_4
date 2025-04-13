@@ -1,0 +1,114 @@
+import javax.swing.*; 
+import java.awt.*;
+
+/**
+ * Clase que representa un Árbol de Pitágoras dibujado recursivamente en un JPanel.
+ */
+public class Activivdad_2 extends JPanel {
+
+    // Nivel de profundidad del árbol (cantidad de bifurcaciones)
+    private int profundidad;
+
+    /**
+     * Constructor que inicializa el árbol con una cierta profundidad
+     * @param profundidad Número de niveles que tendrá el árbol
+     */
+    public Activivdad_2(int profundidad) {
+        this.profundidad = profundidad;
+        // Establece el tamaño preferido del panel
+        setPreferredSize(new Dimension(800, 800));
+    }
+
+    /**
+     * Método que se ejecuta automáticamente al renderizar el panel.
+     * Dibuja el fondo y llama al método recursivo para dibujar el árbol.
+     */
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        Graphics2D g2d = (Graphics2D) g;
+
+        // Dibuja el fondo negro
+        g2d.setColor(Color.BLACK);
+        g2d.fillRect(0, 0, getWidth(), getHeight());
+
+        // Establece el color de las ramas
+        g2d.setColor(Color.GREEN);
+
+        // Calcula la posición de inicio (centro inferior del panel)
+        int startX = getWidth() / 2;
+        int startY = getHeight() - 50;
+
+        // Inicia el trazado del árbol
+        trazaArbol(g2d, startX, startY, 100, -90, profundidad);
+    }
+
+    /**
+     * Método recursivo para trazar el árbol de Pitágoras
+     * @param g      Objeto Graphics2D para dibujar
+     * @param x      Coordenada X del punto inicial
+     * @param y      Coordenada Y del punto inicial
+     * @param lado   Longitud de la rama actual
+     * @param angulo Ángulo de la rama actual
+     * @param nivel  Nivel de profundidad restante
+     */
+    private void trazaArbol(Graphics2D g, int x, int y, int lado, double angulo, int nivel) {
+        // Caso base: se detiene la recursión si el nivel es 0 o el lado es muy pequeño
+        if (nivel == 0 || lado < 2) return;
+
+        // Calcula el punto final de la rama usando trigonometría
+        int x2 = x + (int) (lado * Math.cos(Math.toRadians(angulo)));
+        int y2 = y + (int) (lado * Math.sin(Math.toRadians(angulo)));
+
+        // Dibuja una línea desde (x, y) hasta (x2, y2)
+        g.drawLine(x, y, x2, y2);
+
+        // Calcula el nuevo tamaño de las ramas hijas
+        int nuevoLado = (int) (lado * 0.7);
+
+        // Llamadas recursivas para crear las ramas izquierda y derecha
+        trazaArbol(g, x2, y2, nuevoLado, angulo - 45, nivel - 1); // Rama izquierda
+        trazaArbol(g, x2, y2, nuevoLado, angulo + 45, nivel - 1); // Rama derecha
+    }
+
+    /**
+     * Método main: permite al usuario seleccionar la profundidad del árbol
+     * y lanza la ventana con el dibujo correspondiente.
+     */
+    public static void main(String[] args) {
+        // Ejecuta la interfaz gráfica en el hilo de eventos de Swing
+        SwingUtilities.invokeLater(() -> {
+            // Opciones de profundidad que puede elegir el usuario
+            String[] opciones = {"6", "8", "10"};
+
+            // Ventana emergente para seleccionar profundidad
+            String seleccion = (String) JOptionPane.showInputDialog(
+                    null,
+                    "Selecciona la profundidad del árbol:",
+                    "Árbol de Pitágoras",
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    opciones,
+                    opciones[0]);
+
+            // Si el usuario seleccionó una opción válida
+            if (seleccion != null) {
+                int profundidad = Integer.parseInt(seleccion);
+                crearVentana(profundidad);
+            }
+        });
+    }
+
+    /**
+     * Crea y muestra una ventana con el árbol generado a partir de la profundidad dada
+     * @param profundidad Niveles del árbol
+     */
+    public static void crearVentana(int profundidad) {
+        JFrame frame = new JFrame("Árbol de Pitágoras - Nivel " + profundidad);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.getContentPane().add(new Activivdad_2(profundidad));
+        frame.pack();
+        frame.setLocationRelativeTo(null); // Centra la ventana en pantalla
+        frame.setVisible(true);
+    }
+}
