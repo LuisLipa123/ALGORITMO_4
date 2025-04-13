@@ -1,0 +1,173 @@
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Clase que representa un subarreglo dentro de un arreglo original, mediante
+ * los índices de inicio (prim) y fin (ult).
+ */
+class Limits {
+    int prim, ult;
+
+    /**
+     * Constructor de Limits.
+     * @param prim Índice inicial del subarreglo.
+     * @param ult Índice final del subarreglo.
+     */
+    Limits(int prim, int ult) {
+        this.prim = prim;
+        this.ult = ult;
+    }
+
+    /**
+     * Calcula la longitud del subarreglo.
+     * @return Número de elementos del subarreglo.
+     */
+    int length() {
+        return ult - prim + 1;
+    }
+}
+
+/**
+ * Clase que representa un conjunto de subarreglos.
+ * Internamente, usa una lista de objetos Limits.
+ */
+class SetVectors {
+    private List<Limits> lista = new ArrayList<>();
+
+    /**
+     * Inserta un nuevo subarreglo en el conjunto.
+     * @param l Objeto Limits que representa el subarreglo.
+     */
+    void insertar(Limits l) {
+        lista.add(l);
+    }
+
+    /**
+     * Extrae y retorna el subarreglo con mayor longitud.
+     * @return Subarreglo más largo (objeto Limits).
+     */
+    Limits mayor() {
+        Limits mayor = null;
+        for (Limits l : lista) {
+            if (mayor == null || l.length() > mayor.length()) {
+                mayor = l;
+            }
+        }
+        lista.remove(mayor); // Lo elimina del conjunto tras obtenerlo
+        return mayor;
+    }
+
+    /**
+     * Obtiene la longitud del subarreglo más largo dentro del conjunto.
+     * @return Longitud máxima encontrada.
+     */
+    int longitudMayor() {
+        int max = 0;
+        for (Limits l : lista) {
+            if (l.length() > max)
+                max = l.length();
+        }
+        return max;
+    }
+
+    /**
+     * Verifica si el conjunto está vacío.
+     * @return true si está vacío, false en caso contrario.
+     */
+    boolean esVacio() {
+        return lista.isEmpty();
+    }
+
+    /**
+     * Elimina todos los subarreglos del conjunto.
+     */
+    void destruir() {
+        lista.clear();
+    }
+}
+
+/**
+ * Clase principal que implementa el algoritmo Moda3
+ * utilizando la técnica Divide y Vencerás.
+ */
+public class ModaDivideYVenceras {
+
+    /**
+     * Encuentra la moda (valor más frecuente) de un arreglo ordenado.
+     * Utiliza los conjuntos homogeneo y heterogeneo para dividir recursivamente
+     * el arreglo hasta aislar la subsecuencia más repetida.
+     *
+     * @param a Arreglo de entrada (ordenado).
+     * @param prim Índice inicial del arreglo.
+     * @param ult Índice final del arreglo.
+     * @return La moda del arreglo.
+     */
+    public static int moda3(int[] a, int prim, int ult) {
+        SetVectors homogeneo = new SetVectors();   // Subarreglos con todos los elementos iguales
+        SetVectors heterogeneo = new SetVectors(); // Subarreglos con elementos distintos
+
+        heterogeneo.insertar(new Limits(prim, ult)); // Iniciamos con el arreglo completo como heterogéneo
+
+        // Mientras haya subarreglos heterogéneos más largos que los homogéneos
+        while (heterogeneo.longitudMayor() > homogeneo.longitudMayor()) {
+            Limits p = heterogeneo.mayor(); // Tomamos el subarreglo más largo
+            int mediana = a[(p.prim + p.ult) / 2]; // Elegimos su mediana
+
+            // Dividimos el subarreglo en tres partes respecto a la mediana
+            int[] izq_der = pivote2(a, mediana, p.prim, p.ult);
+            int izq = izq_der[0];
+            int der = izq_der[1];
+
+            Limits p1 = new Limits(p.prim, izq - 1);     // Elementos < mediana
+            Limits p2 = new Limits(izq, der - 1);        // Elementos == mediana
+            Limits p3 = new Limits(der, p.ult);          // Elementos > mediana
+
+            // Repartimos los subarreglos en sus respectivos conjuntos
+            if (p1.prim <= p1.ult)
+                heterogeneo.insertar(p1);
+            if (p3.prim <= p3.ult)
+                heterogeneo.insertar(p3);
+            if (p2.prim <= p2.ult)
+                homogeneo.insertar(p2);
+        }
+
+        // Si no se encontró ningún homogéneo, devolvemos el primer valor
+        if (homogeneo.esVacio()) return a[prim];
+
+        // La moda será el primer elemento del subarreglo homogéneo más largo
+        Limits moda = homogeneo.mayor();
+        homogeneo.destruir();
+        heterogeneo.destruir();
+        return a[moda.prim];
+    }
+
+    /**
+     * Divide un subarreglo en tres partes: menores, iguales y mayores que la mediana.
+     *
+     * @param a Arreglo original.
+     * @param mediana Valor de referencia.
+     * @param prim Índice de inicio del subarreglo.
+     * @param ult Índice de fin del subarreglo.
+     * @return Arreglo con dos posiciones: índice de inicio (izq) y fin (der) de la zona de iguales.
+     */
+    private static int[] pivote2(int[] a, int mediana, int prim, int ult) {
+        int izq = prim;
+        int der = ult + 1;
+
+        // Se recorren los elementos del subarreglo para encontrar los límites
+        for (int i = prim; i <= ult; i++) {
+            if (a[i] < mediana) izq++;
+            else if (a[i] > mediana) der--;
+        }
+        return new int[]{izq, der};
+    }
+
+    /**
+     * Método principal para probar el algoritmo.
+     */
+    public static void main(String[] args) {
+        int[] arreglo = {1, 1, 1, 2, 3, 3, 3, 3, 4, 5}; // El arreglo debe estar ordenado
+        int moda = moda3(arreglo, 0, arreglo.length - 1);
+        System.out.println("La moda es: " + moda);
+    }
+}
