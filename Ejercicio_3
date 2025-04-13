@@ -1,0 +1,68 @@
+/**
+ * Esta clase resuelve el problema del viaje más barato a través de un río,
+ * donde se tiene una matriz de tarifas entre embarcaderos y se desea
+ * calcular el costo mínimo entre dos puntos sin remontar el río.
+ */
+public class ViajeMasBarato {
+
+    /**
+     * Método que calcula el costo mínimo de viajar del embarcadero 0 al n-1.
+     * 
+     * @param T Matriz triangular superior que representa las tarifas directas
+     *          entre embarcaderos T[i][j] (solo para i < j).
+     *          T[i][j] = Integer.MAX_VALUE si no hay conexión directa.
+     * @return El costo mínimo del embarcadero 0 al embarcadero n-1.
+     */
+    public static int viajeMasBarato(int[][] T) {
+        int n = T.length;
+        int[][] C = new int[n][n]; // C[i][j] almacenará el costo mínimo entre i y j
+
+        // Inicializar la matriz de costos C
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (i == j) {
+                    C[i][j] = 0; // El costo de ir de un embarcadero a sí mismo es 0
+                } else {
+                    C[i][j] = T[i][j]; // Inicialmente tomamos el costo directo (si existe)
+                }
+            }
+        }
+
+        // Aplicar programación dinámica para optimizar los costos mínimos
+        for (int longitud = 2; longitud <= n; longitud++) { // longitud de la ruta
+            for (int i = 0; i <= n - longitud; i++) {
+                int j = i + longitud - 1; // extremo derecho del tramo actual
+                for (int k = i + 1; k < j; k++) {
+                    // Verificar que existen rutas válidas desde i -> k y k -> j
+                    if (T[i][k] != Integer.MAX_VALUE && C[k][j] != Integer.MAX_VALUE) {
+                        // Se compara el costo actual con una ruta intermedia a través de k
+                        C[i][j] = Math.min(C[i][j], T[i][k] + C[k][j]);
+                    }
+                }
+            }
+        }
+
+        // Retorna el costo mínimo para ir del embarcadero 0 al embarcadero n-1
+        return C[0][n - 1];
+    }
+
+    /**
+     * Método principal para ejecutar el programa con un ejemplo.
+     */
+    public static void main(String[] args) {
+        // Integer.MAX_VALUE representa infinito (es decir, sin conexión directa)
+        int INF = Integer.MAX_VALUE;
+
+        // Matriz de tarifas T[i][j] (costo directo de i a j si i < j)
+        int[][] T = {
+            {0, 2, 5, 8},
+            {INF, 0, 3, 6},
+            {INF, INF, 0, 4},
+            {INF, INF, INF, 0}
+        };
+
+        // Llamar al método y mostrar el resultado
+        int costoMinimo = viajeMasBarato(T);
+        System.out.println("El costo mínimo del viaje del embarcadero 0 al " + (T.length - 1) + " es: " + costoMinimo);
+    }
+}
