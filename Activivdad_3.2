@@ -1,0 +1,59 @@
+// Clase que implementa la búsqueda binaria de forma iterativa
+public class Busqueda_Iterativa {
+
+    /**
+     * Método que realiza la búsqueda binaria de forma iterativa.
+     * Este algoritmo busca un valor dentro de un arreglo ordenado, reduciendo el rango de búsqueda en cada paso.
+     *
+     * @param arr Arreglo ordenado de enteros donde se realizará la búsqueda
+     * @param x Elemento que se desea buscar
+     * @return El índice donde se encuentra el elemento, o -1 si no está presente
+     */
+    int BusquedaBinaria(int arr[], int x) {
+        int lo = 0;                 // Límite inferior del rango de búsqueda
+        int hi = arr.length - 1;   // Límite superior del rango de búsqueda
+
+        // Bucle que continúa mientras haya elementos por revisar
+        while (lo <= hi) {
+            // Se calcula el índice medio para dividir el arreglo
+            int mid = lo + (hi - lo) / 2;
+
+            // Si el elemento central es el buscado, se retorna su posición
+            if (arr[mid] == x)
+                return mid;
+
+            // Si el elemento buscado es mayor, se busca en la mitad derecha
+            if (arr[mid] < x)
+                lo = mid + 1;
+            // Si es menor, se busca en la mitad izquierda
+            else
+                hi = mid - 1;
+        }
+
+        // Si el elemento no se encuentra, se retorna -1
+        return -1;
+    }
+
+    /**
+     * Método principal que ejecuta la búsqueda binaria con un ejemplo de uso.
+     */
+    public static void main(String[] args) {
+        // Se crea una instancia de la clase Busqueda_Iterativa
+        Busqueda_Iterativa ob = new Busqueda_Iterativa();
+
+        // Arreglo de ejemplo (ordenado)
+        int arr[] = { 1, 2, 3, 4, 5 };
+
+        // Elemento que se desea buscar
+        int x = 3;
+
+        // Se realiza la búsqueda binaria
+        int position = ob.BusquedaBinaria(arr, x);
+
+        // Se imprime el resultado
+        if (position == -1)
+            System.out.println("Elemento no presente.");
+        else
+            System.out.println("Elemento encontrado en el índice: " + position);
+    }
+}
